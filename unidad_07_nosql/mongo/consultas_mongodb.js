@@ -1,0 +1,518 @@
+/**
+ * TECNICATURA UNIVERSITARIA EN PROGRAMACIÓN
+ * BASES DE DATOS II — UNIDAD 7: NoSQL y nuevas formas de almacenamiento
+ * PROYECTO: Food Store — Migración y Consultas Documentales en MongoDB
+ * 
+ * Alumno: Maximiliano Nardez
+ * Motor: MongoDB 9.0+ / mongosh 2.14+
+ * Base de datos: foodstore
+ * Colección: pedidos
+ */
+
+// Seleccionar la base de datos de trabajo
+db = db.getSiblingDB("foodstore");
+
+// ============================================================================
+// PARTE 1 · CREACIÓN DE COLECCIÓN Y MIGRACIÓN (Consigna 2)
+// ============================================================================
+
+// Limpieza de colección previa si existiera
+db.pedidos.drop();
+
+// Inserción de 10 pedidos reales migrados desde PostgreSQL (IDs 1 al 10)
+// Estructura documental con objetos embebidos (cliente) y arreglos (items)
+// conservando tipos de datos, fechas ISODate, subtotales y precios históricos.
+db.pedidos.insertMany([
+  {
+    "_id": 1,
+    "pedido_id": 1,
+    "fecha": "2025-01-01T22:00:00-03:00",
+    "estado": "CONFIRMADO",
+    "forma_pago": "TARJETA",
+    "total": 5464.71,
+    "cliente": {
+      "usuario_id": 2,
+      "nombre": "Usuario2",
+      "apellido": "Apellido2",
+      "email": "usuario2@mail.com",
+      "telefono": "541100000014"
+    },
+    "items": [
+      {
+        "detalle_id": 1,
+        "producto_id": 7,
+        "producto_nombre": "Producto Snacks 7 507ml",
+        "cantidad": 3,
+        "precio_unitario": 759.49,
+        "subtotal": 2278.47
+      },
+      {
+        "detalle_id": 2,
+        "producto_id": 8,
+        "producto_nombre": "Producto Salsas 8 508ml",
+        "cantidad": 4,
+        "precio_unitario": 796.56,
+        "subtotal": 3186.24
+      }
+    ],
+    "cantidad_items": 2
+  },
+  {
+    "_id": 2,
+    "pedido_id": 2,
+    "fecha": "2025-01-02T23:00:00-03:00",
+    "estado": "CONFIRMADO",
+    "forma_pago": "TRANSFERENCIA",
+    "total": 14802.79,
+    "cliente": {
+      "usuario_id": 3,
+      "nombre": "Usuario3",
+      "apellido": "Apellido3",
+      "email": "usuario3@mail.com",
+      "telefono": "541100000021"
+    },
+    "items": [
+      {
+        "detalle_id": 3,
+        "producto_id": 12,
+        "producto_nombre": "Producto Empanadas 12 512ml",
+        "cantidad": 4,
+        "precio_unitario": 944.84,
+        "subtotal": 3779.36
+      },
+      {
+        "detalle_id": 4,
+        "producto_id": 13,
+        "producto_nombre": "Producto Sandwiches 13 513ml",
+        "cantidad": 5,
+        "precio_unitario": 981.91,
+        "subtotal": 4909.55
+      },
+      {
+        "detalle_id": 5,
+        "producto_id": 14,
+        "producto_nombre": "Producto Ensaladas 14 514ml",
+        "cantidad": 6,
+        "precio_unitario": 1018.98,
+        "subtotal": 6113.88
+      }
+    ],
+    "cantidad_items": 3
+  },
+  {
+    "_id": 3,
+    "pedido_id": 3,
+    "fecha": "2025-01-04T00:00:00-03:00",
+    "estado": "CONFIRMADO",
+    "forma_pago": "MERCADO_PAGO",
+    "total": 30990.02,
+    "cliente": {
+      "usuario_id": 4,
+      "nombre": "Usuario4",
+      "apellido": "Apellido4",
+      "email": "usuario4@mail.com",
+      "telefono": "541100000028"
+    },
+    "items": [
+      {
+        "detalle_id": 6,
+        "producto_id": 17,
+        "producto_nombre": "Producto Snacks 17 517ml",
+        "cantidad": 5,
+        "precio_unitario": 1129.19,
+        "subtotal": 5645.95
+      },
+      {
+        "detalle_id": 7,
+        "producto_id": 18,
+        "producto_nombre": "Producto Salsas 18 518ml",
+        "cantidad": 6,
+        "precio_unitario": 1166.26,
+        "subtotal": 6997.56
+      },
+      {
+        "detalle_id": 8,
+        "producto_id": 19,
+        "producto_nombre": "Producto Combos 19 519ml",
+        "cantidad": 7,
+        "precio_unitario": 1203.33,
+        "subtotal": 8423.31
+      },
+      {
+        "detalle_id": 9,
+        "producto_id": 20,
+        "producto_nombre": "Producto Bebidas 20 520ml",
+        "cantidad": 8,
+        "precio_unitario": 1240.4,
+        "subtotal": 9923.2
+      }
+    ],
+    "cantidad_items": 4
+  },
+  {
+    "_id": 4,
+    "pedido_id": 4,
+    "fecha": "2025-01-05T01:00:00-03:00",
+    "estado": "CONFIRMADO",
+    "forma_pago": "TARJETA",
+    "total": 55917.9,
+    "cliente": {
+      "usuario_id": 5,
+      "nombre": "Usuario5",
+      "apellido": "Apellido5",
+      "email": "usuario5@mail.com",
+      "telefono": "541100000035"
+    },
+    "items": [
+      {
+        "detalle_id": 10,
+        "producto_id": 22,
+        "producto_nombre": "Producto Empanadas 22 522ml",
+        "cantidad": 6,
+        "precio_unitario": 1314.54,
+        "subtotal": 7887.24
+      },
+      {
+        "detalle_id": 11,
+        "producto_id": 23,
+        "producto_nombre": "Producto Sandwiches 23 523ml",
+        "cantidad": 7,
+        "precio_unitario": 1351.61,
+        "subtotal": 9461.27
+      },
+      {
+        "detalle_id": 12,
+        "producto_id": 24,
+        "producto_nombre": "Producto Ensaladas 24 524ml",
+        "cantidad": 8,
+        "precio_unitario": 1388.68,
+        "subtotal": 11109.44
+      },
+      {
+        "detalle_id": 13,
+        "producto_id": 25,
+        "producto_nombre": "Producto Postres 25 500ml",
+        "cantidad": 9,
+        "precio_unitario": 1425.75,
+        "subtotal": 12831.75
+      },
+      {
+        "detalle_id": 14,
+        "producto_id": 26,
+        "producto_nombre": "Producto Cafe 26 501ml",
+        "cantidad": 10,
+        "precio_unitario": 1462.82,
+        "subtotal": 14628.2
+      }
+    ],
+    "cantidad_items": 5
+  },
+  {
+    "_id": 5,
+    "pedido_id": 5,
+    "fecha": "2025-01-06T02:00:00-03:00",
+    "estado": "CONFIRMADO",
+    "forma_pago": "EFECTIVO",
+    "total": 10499.23,
+    "cliente": {
+      "usuario_id": 6,
+      "nombre": "Usuario6",
+      "apellido": "Apellido6",
+      "email": "usuario6@mail.com",
+      "telefono": "541100000042"
+    },
+    "items": [
+      {
+        "detalle_id": 15,
+        "producto_id": 27,
+        "producto_nombre": "Producto Snacks 27 502ml",
+        "cantidad": 7,
+        "precio_unitario": 1499.89,
+        "subtotal": 10499.23
+      }
+    ],
+    "cantidad_items": 1
+  },
+  {
+    "_id": 6,
+    "pedido_id": 6,
+    "fecha": "2025-01-07T03:00:00-03:00",
+    "estado": "ENTREGADO",
+    "forma_pago": "EFECTIVO",
+    "total": 11965.71,
+    "cliente": {
+      "usuario_id": 7,
+      "nombre": "Usuario7",
+      "apellido": "Apellido7",
+      "email": "usuario7@mail.com",
+      "telefono": "541100000049"
+    },
+    "items": [
+      {
+        "detalle_id": 16,
+        "producto_id": 32,
+        "producto_nombre": "Producto Empanadas 32 507ml",
+        "cantidad": 8,
+        "precio_unitario": 684.24,
+        "subtotal": 5473.92
+      },
+      {
+        "detalle_id": 17,
+        "producto_id": 33,
+        "producto_nombre": "Producto Sandwiches 33 508ml",
+        "cantidad": 9,
+        "precio_unitario": 721.31,
+        "subtotal": 6491.79
+      }
+    ],
+    "cantidad_items": 2
+  },
+  {
+    "_id": 7,
+    "pedido_id": 7,
+    "fecha": "2025-01-08T04:00:00-03:00",
+    "estado": "ENTREGADO",
+    "forma_pago": "TARJETA",
+    "total": 17836.64,
+    "cliente": {
+      "usuario_id": 8,
+      "nombre": "Usuario8",
+      "apellido": "Apellido8",
+      "email": "usuario8@mail.com",
+      "telefono": "541100000056"
+    },
+    "items": [
+      {
+        "detalle_id": 18,
+        "producto_id": 37,
+        "producto_nombre": "Producto Snacks 37 512ml",
+        "cantidad": 9,
+        "precio_unitario": 869.59,
+        "subtotal": 7826.31
+      },
+      {
+        "detalle_id": 19,
+        "producto_id": 38,
+        "producto_nombre": "Producto Salsas 38 513ml",
+        "cantidad": 10,
+        "precio_unitario": 906.66,
+        "subtotal": 9066.6
+      },
+      {
+        "detalle_id": 20,
+        "producto_id": 39,
+        "producto_nombre": "Producto Combos 39 514ml",
+        "cantidad": 1,
+        "precio_unitario": 943.73,
+        "subtotal": 943.73
+      }
+    ],
+    "cantidad_items": 3
+  },
+  {
+    "_id": 8,
+    "pedido_id": 8,
+    "fecha": "2025-01-09T05:00:00-03:00",
+    "estado": "ENTREGADO",
+    "forma_pago": "TRANSFERENCIA",
+    "total": 17392.02,
+    "cliente": {
+      "usuario_id": 9,
+      "nombre": "Usuario9",
+      "apellido": "Apellido9",
+      "email": "usuario9@mail.com",
+      "telefono": "541100000063"
+    },
+    "items": [
+      {
+        "detalle_id": 21,
+        "producto_id": 42,
+        "producto_nombre": "Producto Empanadas 42 517ml",
+        "cantidad": 10,
+        "precio_unitario": 1054.94,
+        "subtotal": 10549.4
+      },
+      {
+        "detalle_id": 22,
+        "producto_id": 43,
+        "producto_nombre": "Producto Sandwiches 43 518ml",
+        "cantidad": 1,
+        "precio_unitario": 1091.01,
+        "subtotal": 1091.01
+      },
+      {
+        "detalle_id": 23,
+        "producto_id": 44,
+        "producto_nombre": "Producto Ensaladas 44 519ml",
+        "cantidad": 2,
+        "precio_unitario": 1128.08,
+        "subtotal": 2256.16
+      },
+      {
+        "detalle_id": 24,
+        "producto_id": 45,
+        "producto_nombre": "Producto Postres 45 520ml",
+        "cantidad": 3,
+        "precio_unitario": 1165.15,
+        "subtotal": 3495.45
+      }
+    ],
+    "cantidad_items": 4
+  },
+  {
+    "_id": 9,
+    "pedido_id": 9,
+    "fecha": "2025-01-10T06:00:00-03:00",
+    "estado": "CANCELADO",
+    "forma_pago": "MERCADO_PAGO",
+    "total": 20072.15,
+    "cliente": {
+      "usuario_id": 10,
+      "nombre": "Usuario10",
+      "apellido": "Apellido10",
+      "email": "usuario10@mail.com",
+      "telefono": "541100000070"
+    },
+    "items": [
+      {
+        "detalle_id": 25,
+        "producto_id": 47,
+        "producto_nombre": "Producto Snacks 47 522ml",
+        "cantidad": 1,
+        "precio_unitario": 1239.29,
+        "subtotal": 1239.29
+      },
+      {
+        "detalle_id": 26,
+        "producto_id": 48,
+        "producto_nombre": "Producto Salsas 48 523ml",
+        "cantidad": 2,
+        "precio_unitario": 1276.36,
+        "subtotal": 2552.72
+      },
+      {
+        "detalle_id": 27,
+        "producto_id": 49,
+        "producto_nombre": "Producto Combos 49 524ml",
+        "cantidad": 3,
+        "precio_unitario": 1313.43,
+        "subtotal": 3940.29
+      },
+      {
+        "detalle_id": 28,
+        "producto_id": 50,
+        "producto_nombre": "Producto Bebidas 50 500ml",
+        "cantidad": 4,
+        "precio_unitario": 1350.5,
+        "subtotal": 5402.0
+      },
+      {
+        "detalle_id": 29,
+        "producto_id": 51,
+        "producto_nombre": "Producto Pizzas 51 501ml",
+        "cantidad": 5,
+        "precio_unitario": 1387.57,
+        "subtotal": 6937.85
+      }
+    ],
+    "cantidad_items": 5
+  },
+  {
+    "_id": 10,
+    "pedido_id": 10,
+    "fecha": "2025-01-11T07:00:00-03:00",
+    "estado": "PENDIENTE",
+    "forma_pago": "TARJETA",
+    "total": 2849.28,
+    "cliente": {
+      "usuario_id": 11,
+      "nombre": "Usuario11",
+      "apellido": "Apellido11",
+      "email": "usuario11@mail.com",
+      "telefono": "541100000077"
+    },
+    "items": [
+      {
+        "detalle_id": 30,
+        "producto_id": 52,
+        "producto_nombre": "Producto Empanadas 52 502ml",
+        "cantidad": 2,
+        "precio_unitario": 1424.64,
+        "subtotal": 2849.28
+      }
+    ],
+    "cantidad_items": 1
+  }
+]);
+
+print("\n[OK] Migración finalizada. Cantidad de documentos en pedidos: " + db.pedidos.countDocuments());
+
+// ============================================================================
+// PARTE 2 · CONSULTAS Y VERIFICACIÓN (Consigna 4)
+// ============================================================================
+
+print("\n================================================================================");
+print("CONSIGNA 4.a: Mostrar todos los pedidos, incluyendo su identificador y estado");
+print("================================================================================");
+db.pedidos.find(
+    {}, 
+    { _id: 1, estado: 1 }
+).forEach(p => {
+    print("Pedido ID: " + p._id + " | Estado: " + p.estado);
+});
+
+print("\n================================================================================");
+print("CONSIGNA 4.b: Filtrar pedidos por un estado que exista ('CONFIRMADO')");
+print("================================================================================");
+db.pedidos.find(
+    { estado: "CONFIRMADO" },
+    { _id: 1, estado: 1, total: 1, forma_pago: 1, "cliente.nombre": 1, "cliente.apellido": 1 }
+).forEach(p => {
+    print("Pedido ID: " + p._id + " | Estado: " + p.estado + " | Total: $" + p.total + " | Pago: " + p.forma_pago + " | Cliente: " + p.cliente.nombre + " " + p.cliente.apellido);
+});
+
+print("\n================================================================================");
+print("CONSIGNA 4.c: Buscar pedidos que contengan un producto determinado en sus líneas");
+print("Filtro: producto_id = 8 ('Producto Salsas 8 508ml')");
+print("================================================================================");
+db.pedidos.find(
+    { "items.producto_id": 8 },
+    { _id: 1, estado: 1, total: 1, "cliente.nombre": 1, items: 1 }
+).forEach(p => {
+    print("Pedido ID: " + p._id + " | Total: $" + p.total + " | Cliente: " + p.cliente.nombre);
+    p.items.forEach(it => {
+        print("   -> Item: " + it.producto_nombre + " (Prod ID: " + it.producto_id + ") | Cant: " + it.cantidad + " | P.Unit: $" + it.precio_unitario + " | Subtotal: $" + it.subtotal);
+    });
+});
+
+print("\n================================================================================");
+print("CONSIGNA 4.d: Buscar pedidos cuyo total sea superior a un importe ($15.000)");
+print("Justificación: Separa compras individuales/rápidas de pedidos familiares o grupales");
+print("================================================================================");
+db.pedidos.find(
+    { total: { $gt: 15000 } },
+    { _id: 1, total: 1, estado: 1, "cliente.nombre": 1, "cliente.apellido": 1 }
+).sort({ total: -1 }).forEach(p => {
+    print("Pedido ID: " + p._id + " | Total: $" + p.total + " | Estado: " + p.estado + " | Cliente: " + p.cliente.nombre + " " + p.cliente.apellido);
+});
+
+print("\n================================================================================");
+print("VERIFICACIÓN DE INTEGRIDAD FINANCIERA (Suma de líneas vs Total cabecera)");
+print("================================================================================");
+db.pedidos.aggregate([
+    { $unwind: "$items" },
+    { $group: {
+        _id: "$_id",
+        total_cabecera: { $first: "$total" },
+        suma_subtotales: { $sum: "$items.subtotal" }
+    }},
+    { $project: {
+        _id: 1,
+        total_cabecera: 1,
+        suma_subtotales: { $round: ["$suma_subtotales", 2] },
+        diferencia: { $round: [{ $subtract: ["$total_cabecera", "$suma_subtotales"] }, 2] }
+    }},
+    { $sort: { _id: 1 } }
+]).forEach(r => {
+    print("Pedido " + r._id + " -> Cabecera: $" + r.total_cabecera + " | Líneas: $" + r.suma_subtotales + " | Dif: $" + r.diferencia);
+});
