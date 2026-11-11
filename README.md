@@ -3,7 +3,11 @@
 
 **Institución:** Universidad Tecnológica Nacional (UTN) · Tecnicatura Universitaria en Programación  
 **Asignatura:** Base de Datos II · Ciclo Lectivo 2026  
-**Estudiante:** Maximiliano Nardez  
+**Integrantes del Grupo:**
+* **Máximo Monardez**
+* **Thiago Oviedo**
+* **Matías Ruiz**
+
 **Motores de Referencia:** PostgreSQL 16+ (17.x) · MongoDB 9.0+ · SQLite 3.37+ (3.50+)  
 **Repositorio Oficial:** [`https://github.com/TekkNo0/BDTPI`](https://github.com/TekkNo0/BDTPI)
 
