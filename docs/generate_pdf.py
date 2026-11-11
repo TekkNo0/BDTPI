@@ -38,7 +38,7 @@ class NumberedCanvas(canvas.Canvas):
         # Header (pages > 1)
         if self._pageNumber > 1:
             self.drawString(54, 800, "Base de Datos II · TPI «Food Store» · Segunda Entrega (Unidades 4 a 8)")
-            self.drawRightString(A4[0] - 54, 800, "Maximiliano Nardez · UTN")
+            self.drawRightString(A4[0] - 54, 800, "M. Monardez · T. Oviedo · M. Ruiz · UTN")
             self.setStrokeColor(colors.HexColor("#CBD5E0"))
             self.setLineWidth(0.5)
             self.line(54, 794, A4[0] - 54, 794)
@@ -157,7 +157,8 @@ def build_pdf():
     
     meta_text = (
         "<b>Institución:</b> Universidad Tecnológica Nacional (UTN) · Tecnicatura Universitaria en Programación<br/>"
-        "<b>Asignatura:</b> Base de Datos II · Ciclo Lectivo 2026 | <b>Alumno:</b> Maximiliano Nardez<br/>"
+        "<b>Asignatura:</b> Base de Datos II · Ciclo Lectivo 2026<br/>"
+        "<b>Integrantes del Grupo:</b> Máximo Monardez · Thiago Oviedo · Matías Ruiz<br/>"
         "<b>Motores:</b> PostgreSQL 17 (OLTP) · MongoDB 9.0+ (NoSQL Read Model) · SQLite 3.37+ (Edge POS)<br/>"
         "<b>Repositorio:</b> https://github.com/TekkNo0/BDTPI | <b>Rama de Entrega:</b> unidades-7-8"
     )

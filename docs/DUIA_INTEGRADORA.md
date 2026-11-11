@@ -3,7 +3,11 @@
 
 **Institución:** Universidad Tecnológica Nacional (UTN) · Tecnicatura Universitaria en Programación  
 **Asignatura:** Base de Datos II · Ciclo Lectivo 2026  
-**Estudiante:** Maximiliano Nardez  
+**Integrantes del Grupo:**
+* **Máximo Monardez**
+* **Thiago Oviedo**
+* **Matías Ruiz**
+
 **Proyecto:** Food Store  
 **Fecha:** Noviembre 2026  
 
